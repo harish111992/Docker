@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysqldb:
+    image: mysql:5.7
+    volumes:
+      - mysql_volume:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: harishpwd
+      MYSQL_USER: user1
+      MYSQL_PASSWORD: user1pwd
+  phpmyadmin:
+    image:  nazarpc/phpmyadmin
+    restart: always
+    depends_on:
+      - mysqldb
+    environment:
+      MYSQL_HOST: mysqldb  
+    ports:
+      - 8080:80
+    volumes:
+      - php_volume:/var/www/html    
+  wordpress:
+    image: wordpress:5.1.1-php7.3-apache
+    restart: always
+    depends_on:
+      - mysqldb
+    ports:
+      - 80:80  
+    environment:
+      WORDPRESS_DB_HOST: mysqldb
+      WORDPRESS_DB_USER: user1
+      WORDPRESS_DB_PASSWORD: user1pwd
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_volume:/var/www/html 
+volumes:
+  mysql_volume:
+  wordpress_volume:
+  php_volume:
